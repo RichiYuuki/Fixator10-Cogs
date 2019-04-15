@@ -79,7 +79,7 @@ class MinecraftData(commands.Cog):
         em.set_footer(
             text="Provided by Crafatar", icon_url="https://crafatar.com/logo.png"
         )
-        await ctx.send(_(embed=em, files=files))
+        await ctx.send(embed=em, files=files)
 
     @minecraft.group(autohelp=True)
     async def cape(self, ctx):
@@ -98,7 +98,8 @@ class MinecraftData(commands.Cog):
             url="http://s.optifine.net/capes/{}.png".format(nickname.name),
         )
         em.set_image(url="http://s.optifine.net/capes/{}.png".format(nickname.name))
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
+
 
     @cape.command()
     async def labymod(self, ctx, nickname: MCNickname):
@@ -149,7 +150,7 @@ class MinecraftData(commands.Cog):
         em.set_image(
             url="https://www.minecraftcapes.co.uk/getCape.php?uuid={}".format(uuid)
         )
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @cape.group(name="5zig", aliases=["fivezig"], invoke_without_command=True)
     async def fivezig(self, ctx, nickname: MCNickname):
@@ -284,7 +285,7 @@ class MinecraftData(commands.Cog):
                 value=f"{query.software.brand}\n" f"Version: {query.software.version}\n"
                 # f"Plugins: {query.software.plugins}"
             )
-        await ctx.send(_(file=icon, embed=embed))
+        await ctx.send(file=icon, embed=embed)
 
     @minecraft.command()
     @checks.bot_has_permissions(embed_links=True)
@@ -306,7 +307,7 @@ class MinecraftData(commands.Cog):
                         .replace("yellow", "💛 **SOME ISSUES**")
                         .replace("green", "💚 **OK**"),
                     )
-            await ctx.send(_(embed=em))
+            await ctx.send(embed=em)
         except Exception as e:
             await ctx.send(_(
                 chat.error(

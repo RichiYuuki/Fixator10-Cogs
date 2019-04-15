@@ -65,7 +65,7 @@ class DataUtils(commands.Cog):
         embed.set_image(url=user.avatar_url_as(static_format="png", size=2048))
         embed.set_thumbnail(url=user.default_avatar_url)
         embed.set_footer(text="Created at")
-        await ctx.send(_(embed=embed))
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=["memberinfo", "membinfo"])
     @commands.guild_only()
@@ -129,7 +129,7 @@ class DataUtils(commands.Cog):
             + str(member.colour.b)
             + "&a=255"
         )
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command(aliases=["servinfo", "serv", "sv"])
     @commands.guild_only()
@@ -226,7 +226,7 @@ class DataUtils(commands.Cog):
                 value="✅ [🔗](" + server.splash_url_as(format="png", size=2048) + ")",
             )
         em.set_image(url=server.icon_url_as(format="png", size=2048))
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command()
     @commands.guild_only()
@@ -364,7 +364,7 @@ class DataUtils(commands.Cog):
             )
         elif isinstance(channel, discord.CategoryChannel):
             em.add_field(name="NSFW", value=bool_emojify(channel.is_nsfw()))
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command(aliases=["channellist", "listchannels"])
     @commands.guild_only()
@@ -410,7 +410,7 @@ class DataUtils(commands.Cog):
                 len(server.voice_channels),
             )
         )
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command(aliases=["roleinfo"])
     @commands.guild_only()
@@ -448,7 +448,7 @@ class DataUtils(commands.Cog):
             + str(role.colour.b)
             + "&a=255"
         )
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command()
     @commands.guild_only()
@@ -544,7 +544,7 @@ class DataUtils(commands.Cog):
                 name="Unicode emoji", value=bool_emojify(emoji.is_unicode_emoji())
             )
         em.set_image(url=emoji.url)
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     async def smart_truncate(self, content, length=32, suffix="…"):
         """https://stackoverflow.com/questions/250357/truncate-a-string-without-ending-in-the-middle-of-a-word"""

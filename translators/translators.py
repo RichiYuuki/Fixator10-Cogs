@@ -96,7 +96,7 @@ class Translators(commands.Cog):
                 url="https://translate.yandex.com",
                 icon_url="https://translate.yandex.ru/icons/favicon.png",
             )
-            await ctx.send(_(embed=embed))
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def googlesay(self, ctx, lang: str, *, text: str):

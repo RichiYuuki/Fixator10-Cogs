@@ -166,7 +166,7 @@ class SteamCommunity(commands.Cog):
             text="Powered by Steam • Last seen on",
             icon_url="https://steamstore-a.akamaihd.net/public/shared/images/responsive/share_steam_logo.png",
         )
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command(aliases=["gameserver"])
     async def getserver(self, ctx, serverip: str):
@@ -260,4 +260,4 @@ class SteamCommunity(commands.Cog):
                 name="Players", value="{}/{}\n".format(playernumber, maxplayers)
             )
 
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)

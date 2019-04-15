@@ -89,7 +89,7 @@ class MoreUtils(commands.Cog):
                 colorrgb[0], colorrgb[1], colorrgb[2]
             )
         )
-        await ctx.send(_(embed=em))
+        await ctx.send(embed=em)
 
     @commands.command(pass_context=True, no_pm=True)
     async def someone(self, ctx, *, text: str = None):
@@ -157,7 +157,7 @@ class MoreUtils(commands.Cog):
                 name=component["name"],
                 value=component["status"].capitalize().replace("_", " "),
             )
-        await ctx.send(_(embed=embed))
+        await ctx.send(embed=embed)
 
     async def random_channel_member(self, channel: discord.TextChannel):
         """Returns random member that has access to channel"""
