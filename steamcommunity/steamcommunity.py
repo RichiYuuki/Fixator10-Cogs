@@ -11,6 +11,9 @@ from valve.steam.api import interface
 
 from .converters import SteamID
 from .steamuser import SteamUser
+from redbot.core.i18n import Translator, cog_i18n
+
+_ = Translator("ExampleCog", __file__)
 
 
 def bool_emojify(bool_var: bool) -> str:
@@ -28,7 +31,7 @@ def _check_api(ctx):
     """Opposite to check_api(ctx)"""
     return not check_api(ctx)
 
-
+@cog_i18n(_)
 class SteamCommunity(commands.Cog):
     """SteamCommunity commands"""
 
@@ -95,12 +98,12 @@ class SteamCommunity(commands.Cog):
                 None, SteamUser, self.steam, steamid
             )
         except IndexError:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Unable to get profile for {}. "
                     "Check your input or try again later.".format(steamid)
                 )
-            )
+            ))
             return
         em = discord.Embed(
             title=profile.personaname,
@@ -163,7 +166,7 @@ class SteamCommunity(commands.Cog):
             text="Powered by Steam • Last seen on",
             icon_url="https://steamstore-a.akamaihd.net/public/shared/images/responsive/share_steam_logo.png",
         )
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command(aliases=["gameserver"])
     async def getserver(self, ctx, serverip: str):
@@ -177,7 +180,7 @@ class SteamCommunity(commands.Cog):
             try:
                 ip = gethostbyname_ex(serverc[0])[2][0]
             except Exception as e:
-                await ctx.send(f"The specified domain is not valid: {e}")
+                await ctx.send(_(f"The specified domain is not valid: {e}"))
                 return
             servercheck = ip
             serverc = [str(ip), int(serverc[1])]
@@ -198,14 +201,14 @@ class SteamCommunity(commands.Cog):
             server.close()
 
         except valve.source.a2s.NoResponseError:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Could not fetch Server or the Server is not on the Steam masterlist"
                 )
-            )
+            ))
             return
         except Exception as e:
-            await ctx.send(chat.error(f"An Error has been occurred: {e}"))
+            await ctx.send(_(chat.error(f"An Error has been occurred: {e}")))
             return
 
         _map = info.values["map"]
@@ -257,4 +260,4 @@ class SteamCommunity(commands.Cog):
                 name="Players", value="{}/{}\n".format(playernumber, maxplayers)
             )
 
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))

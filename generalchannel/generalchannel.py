@@ -4,7 +4,11 @@ from redbot.core import commands
 from redbot.core.config import Config
 from redbot.core.utils import chat_formatting as chat
 from redbot.core.utils.mod import get_audit_reason
+from redbot.core.i18n import Translator, cog_i18n
 
+_ = Translator("ExampleCog", __file__)
+
+@cog_i18n(_)
 
 async def server_set(ctx):
     """Check if member has required role and channel is configured"""
@@ -59,11 +63,11 @@ class GeneralChannel(commands.Cog):
                 reason=get_audit_reason(ctx.author, "General channel name change"),
             )
         except discord.Forbidden:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error("Unable to change channel's name: Missing permissions")
-            )
+            ))
         except discord.HTTPException:
-            await ctx.send(chat.error("Unable to change channel's name: Failed."))
+            await ctx.send(_(chat.error("Unable to change channel's name: Failed.")))
         else:
             await ctx.tick()
 
@@ -91,10 +95,10 @@ class GeneralChannel(commands.Cog):
                 reason=get_audit_reason(ctx.author, "General channel topic change"),
             )
         except discord.Forbidden:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error("Unable to change channel's topic: Missing permissions")
-            )
+            ))
         except discord.HTTPException:
-            await ctx.send(chat.error("Unable to change channel's topic: Failed."))
+            await ctx.send(_(chat.error("Unable to change channel's topic: Failed.")))
         else:
             await ctx.tick()

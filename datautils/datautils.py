@@ -3,11 +3,14 @@ from typing import Union
 import discord
 import matplotlib.colors as colors
 import tabulate
+
 from redbot.core import checks
 from redbot.core import commands
 from redbot.core.utils import chat_formatting as chat
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
+from redbot.core.i18n import Translator, cog_i18n
 
+_ = Translator("ExampleCog", __file__)
 
 def rgb_to_hex(rgb_tuple):
     return colors.rgb2hex([1.0 * x / 255 for x in rgb_tuple])
@@ -16,7 +19,7 @@ def rgb_to_hex(rgb_tuple):
 def bool_emojify(bool_var: bool) -> str:
     return "✅" if bool_var else "❌"
 
-
+@cog_i18n(_)
 class DataUtils(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -28,17 +31,17 @@ class DataUtils(commands.Cog):
         try:
             user = await self.bot.get_user_info(user_id)
         except discord.NotFound:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error("Discord user with ID `{}` not found").format(user_id)
-            )
+            ))
             return
         except discord.HTTPException:
-            await ctx.send(
+            await ctx.send(_(
                 chat.warning(
                     "Bot was unable to get data about user with ID `{}`. "
                     "Try again later".format(user_id)
                 )
-            )
+            ))
             return
         embed = discord.Embed(
             title=chat.escape(str(user), formatting=True),
@@ -62,7 +65,7 @@ class DataUtils(commands.Cog):
         embed.set_image(url=user.avatar_url_as(static_format="png", size=2048))
         embed.set_thumbnail(url=user.default_avatar_url)
         embed.set_footer(text="Created at")
-        await ctx.send(embed=embed)
+        await ctx.send(_(embed=embed))
 
     @commands.command(aliases=["memberinfo", "membinfo"])
     @commands.guild_only()
@@ -126,7 +129,7 @@ class DataUtils(commands.Cog):
             + str(member.colour.b)
             + "&a=255"
         )
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command(aliases=["servinfo", "serv", "sv"])
     @commands.guild_only()
@@ -223,7 +226,7 @@ class DataUtils(commands.Cog):
                 value="✅ [🔗](" + server.splash_url_as(format="png", size=2048) + ")",
             )
         em.set_image(url=server.icon_url_as(format="png", size=2048))
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command()
     @commands.guild_only()
@@ -236,12 +239,12 @@ class DataUtils(commands.Cog):
         else:
             server = self.bot.get_guild(server)
         if server is None:
-            await ctx.send("Failed to get server with provided ID")
+            await ctx.send(_("Failed to get server with provided ID"))
             return
         if not server.me.guild_permissions.ban_members:
-            await ctx.send(
+            await ctx.send(_(
                 'I need permission "Ban Members" to access banned members on server'
-            )
+            ))
             return
         banlist = await server.bans()
         if banlist:
@@ -251,7 +254,7 @@ class DataUtils(commands.Cog):
             pages = [chat.box(page) for page in list(chat.pagify(banlisttext))]
             await menu(ctx, pages, DEFAULT_CONTROLS)
         else:
-            await ctx.send("Banlist is empty!")
+            await ctx.send(_("Banlist is empty!"))
 
     @commands.command()
     @commands.guild_only()
@@ -264,12 +267,12 @@ class DataUtils(commands.Cog):
         else:
             server = self.bot.get_guild(server)
         if server is None:
-            await ctx.send("Failed to get server with provided ID")
+            await ctx.send(_("Failed to get server with provided ID"))
             return
         if not server.me.guild_permissions.manage_guild:
-            await ctx.send(
+            await ctx.send(_(
                 'I need permission "Manage Server" to access list of invites on server'
-            )
+            ))
             return
         invites = await server.invites()
         if invites:
@@ -278,7 +281,7 @@ class DataUtils(commands.Cog):
             )
             await menu(ctx, list(chat.pagify(inviteslist)), DEFAULT_CONTROLS)
         else:
-            await ctx.send("There is no invites for this server")
+            await ctx.send(_("There is no invites for this server"))
 
     @commands.command(aliases=["chaninfo", "channelinfo"])
     @commands.guild_only()
@@ -361,7 +364,7 @@ class DataUtils(commands.Cog):
             )
         elif isinstance(channel, discord.CategoryChannel):
             em.add_field(name="NSFW", value=bool_emojify(channel.is_nsfw()))
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command(aliases=["channellist", "listchannels"])
     @commands.guild_only()
@@ -374,7 +377,7 @@ class DataUtils(commands.Cog):
         else:
             server = discord.utils.get(self.bot.guilds, id=server)
         if server is None:
-            await ctx.send("Failed to get server with provided ID")
+            await ctx.send(_("Failed to get server with provided ID"))
             return
         categories = (
             "\n".join([chat.escape(x.name, formatting=True) for x in server.categories])
@@ -407,7 +410,7 @@ class DataUtils(commands.Cog):
                 len(server.voice_channels),
             )
         )
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command(aliases=["roleinfo"])
     @commands.guild_only()
@@ -445,7 +448,7 @@ class DataUtils(commands.Cog):
             + str(role.colour.b)
             + "&a=255"
         )
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command()
     @commands.guild_only()
@@ -472,7 +475,7 @@ class DataUtils(commands.Cog):
         else:
             server = self.bot.get_guild(server)
         if server is None:
-            await ctx.send("Failed to get server with provided ID")
+            await ctx.send(_("Failed to get server with provided ID"))
             return
         roles = []
         for role in server.roles:
@@ -498,12 +501,12 @@ class DataUtils(commands.Cog):
         if channel is None:
             channel = ctx.channel
         perms = channel.permissions_for(member)
-        await ctx.send(
+        await ctx.send(_(
             "{}\n{}".format(
                 chat.inline(str(member.guild_permissions.value)),
                 chat.box(chat.format_perms_list(perms), lang="py"),
             )
-        )
+        ))
 
     @commands.command(aliases=["emojiinfo", "emojinfo"])
     @commands.guild_only()
@@ -541,7 +544,7 @@ class DataUtils(commands.Cog):
                 name="Unicode emoji", value=bool_emojify(emoji.is_unicode_emoji())
             )
         em.set_image(url=emoji.url)
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     async def smart_truncate(self, content, length=32, suffix="…"):
         """https://stackoverflow.com/questions/250357/truncate-a-string-without-ending-in-the-middle-of-a-word"""

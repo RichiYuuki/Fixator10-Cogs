@@ -12,8 +12,11 @@ from redbot.core import commands
 from redbot.core.utils import chat_formatting as chat
 
 from . import yandextranslate
+from redbot.core.i18n import Translator, cog_i18n
 
+_ = Translator("ExampleCog", __file__)
 
+@cog_i18n(_)
 class Translators(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -54,35 +57,35 @@ class Translators(commands.Cog):
             )
             translation = await translator.get_translation(language, text)
         except yandextranslate.Exceptions.IncorrectLang:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "An error has been occurred: "
                     f"Language {chat.inline(language)} is not supported or incorrect, "
                     "check your formatting and try again"
                 )
-            )
+            ))
         except yandextranslate.Exceptions.MaxTextLengthExceeded:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "An error has been occurred: Text that you provided is too big to translate"
                 )
-            )
+            ))
         except yandextranslate.Exceptions.KeyBlocked:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "API key is blocked. Bot owner needs to get new api key or unlock current."
                 )
-            )
+            ))
         except yandextranslate.Exceptions.DailyLimitExceeded:
-            await ctx.send(chat.error("Daily requests limit reached. Try again later."))
+            await ctx.send(_(chat.error("Daily requests limit reached. Try again later.")))
         except yandextranslate.Exceptions.UnableToTranslate:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "An error has been occurred: Yandex.Translate is unable to translate your text"
                 )
-            )
+            ))
         except yandextranslate.Exceptions.UnknownException as e:
-            await ctx.send(chat.error(f"An error has been occured: {e}"))
+            await ctx.send(_(chat.error(f"An error has been occured: {e}")))
         else:
             embed = discord.Embed(
                 description=f"**[{translation.lang.upper()}]**{chat.box(translation.text)}",
@@ -93,7 +96,7 @@ class Translators(commands.Cog):
                 url="https://translate.yandex.com",
                 icon_url="https://translate.yandex.ru/icons/favicon.png",
             )
-            await ctx.send(embed=embed)
+            await ctx.send(_(embed=embed))
 
     @commands.command()
     async def googlesay(self, ctx, lang: str, *, text: str):
@@ -112,19 +115,19 @@ class Translators(commands.Cog):
                 },
             ) as data:
                 if data.status != 200:
-                    await ctx.send(
+                    await ctx.send(_(
                         chat.error(
                             "Google Translate returned code {}".format(data.status)
                         )
-                    )
+                    ))
                     return
                 speech = await data.read()
         except Exception as e:
-            await ctx.send("Unable to get data from Google Translate TTS: {}".format(e))
+            await ctx.send(_("Unable to get data from Google Translate TTS: {}".format(e)))
             return
         speechfile = io.BytesIO(speech)
         file = discord.File(speechfile, filename="{}.mp3".format(text[:32]))
-        await ctx.send(file=file)
+        await ctx.send(_(file=file))
         speechfile.close()
 
     @commands.command(aliases=["ецихо"])
@@ -151,7 +154,7 @@ class Translators(commands.Cog):
         tran = tran.upper()
         table = str.maketrans(char, tran)
         text = text.translate(table)
-        await ctx.send(text)
+        await ctx.send(_(text))
 
     @commands.command()
     async def fliptext(self, ctx, *, text: str):
@@ -168,7 +171,7 @@ class Translators(commands.Cog):
         dic = {"ю": "oı", "ы": "ıq", "ё": "ǝ̤", "й": "n̯"}
         pattern = re.compile("|".join(dic.keys()))
         result = pattern.sub(lambda x: dic[x.group()], text)
-        await ctx.send(result)
+        await ctx.send(_(result))
 
     @commands.command()
     async def fullwidth(self, ctx, *, text: str):
@@ -185,7 +188,7 @@ class Translators(commands.Cog):
         fullwidth = fullwidth.upper()
         table = str.maketrans(halfwidth, fullwidth)
         text = text.translate(table)
-        await ctx.send(text)
+        await ctx.send(_(text))
 
     @commands.group()
     async def leet(self, ctx: commands.Context):
@@ -226,7 +229,7 @@ class Translators(commands.Cog):
         }
         pattern = re.compile("|".join(dic.keys()))
         result = pattern.sub(lambda x: dic[x.group()], text)
-        await ctx.send(chat.box(result))
+        await ctx.send(_(chat.box(result)))
 
     @leet.command(aliases=["russian", "cyrillic"])
     async def cs(self, ctx, *, text: str):
@@ -270,7 +273,7 @@ class Translators(commands.Cog):
         }
         pattern = re.compile("|".join(dic_cs.keys()))
         result = pattern.sub(lambda x: dic_cs[x.group()], text)
-        await ctx.send(chat.box(result))
+        await ctx.send(_(chat.box(result)))
 
     @commands.group(name="base64")
     async def _base64(self, ctx):
@@ -284,7 +287,7 @@ class Translators(commands.Cog):
         output = base64.standard_b64encode(text)
         result = output.decode()
         for page in chat.pagify(result):
-            await ctx.send(chat.box(page))
+            await ctx.send(_(chat.box(page)))
 
     @_base64.command(name="decode")
     async def _frombase64(self, ctx, *, encoded: str):
@@ -292,7 +295,7 @@ class Translators(commands.Cog):
         encoded = encoded.encode()
         decoded = base64.standard_b64decode(encoded)
         result = decoded.decode()
-        await ctx.send(chat.box(result))
+        await ctx.send(_(chat.box(result)))
 
     # noinspection PyPep8
     @commands.command()
@@ -305,7 +308,7 @@ class Translators(commands.Cog):
         char = char.upper()
         table = str.maketrans(char, tran)
         name = name.translate(table)
-        await ctx.send(
+        await ctx.send(_(
             name.replace(" ", "　　")
             .replace("", "​")
             .replace("0", ":zero:")
@@ -320,11 +323,11 @@ class Translators(commands.Cog):
             .replace("9", ":nine:")
             .replace("#", "#⃣")
             .replace("*", "*⃣")
-        )
+        ))
 
     @commands.command(pass_context=True, name="urlencode", aliases=["url"])
     async def _urlencode(self, ctx, *, text: str):
         """Encode text to url-like format
         ('abc def') -> 'abc%20def'"""
         encoded_url = parse.quote(text)
-        await ctx.send(chat.box(encoded_url))
+        await ctx.send(_(chat.box(encoded_url)))

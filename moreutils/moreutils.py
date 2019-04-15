@@ -8,7 +8,9 @@ from dateutil.parser import parse
 from redbot.core import checks
 from redbot.core import commands
 from redbot.core.utils import chat_formatting as chat
+from redbot.core.i18n import Translator, cog_i18n
 
+_ = Translator("ExampleCog", __file__)
 
 def rgb_to_cmyk(r, g, b):
     rgb_scale = 255
@@ -36,7 +38,7 @@ def rgb_to_cmyk(r, g, b):
 def bool_emojify(bool_var: bool) -> str:
     return "✅" if bool_var else "❌"
 
-
+@cog_i18n(_)
 class MoreUtils(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -48,7 +50,7 @@ class MoreUtils(commands.Cog):
     @commands.command(name="thetime")
     async def _thetime(self, ctx):
         """Send bot's current time"""
-        await ctx.send(datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S %Z"))
+        await ctx.send(_(datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S %Z")))
 
     @commands.command(aliases=["HEX", "hex"])
     @checks.bot_has_permissions(embed_links=True)
@@ -87,7 +89,7 @@ class MoreUtils(commands.Cog):
                 colorrgb[0], colorrgb[1], colorrgb[2]
             )
         )
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @commands.command(pass_context=True, no_pm=True)
     async def someone(self, ctx, *, text: str = None):
@@ -109,13 +111,13 @@ class MoreUtils(commands.Cog):
         ]
         smile = random.choice(smilies)
         member = await self.random_channel_member(ctx.channel)
-        await ctx.send(
+        await ctx.send(_(
             "**@someone** {} ***{}*** {}".format(
                 smile,
                 chat.escape(member.display_name, mass_mentions=True),
                 chat.escape(text, mass_mentions=True) if text else "",
             )
-        )
+        ))
 
     @commands.command(pass_context=True)
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -127,11 +129,11 @@ class MoreUtils(commands.Cog):
             ) as data:
                 response = await data.json()
         except Exception as e:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     f"Unable to get data from https://status.discordapp.com: {e}"
                 )
-            )
+            ))
             return
         status = response["status"]
         status_indicators = {
@@ -155,7 +157,7 @@ class MoreUtils(commands.Cog):
                 name=component["name"],
                 value=component["status"].capitalize().replace("_", " "),
             )
-        await ctx.send(embed=embed)
+        await ctx.send(_(embed=embed))
 
     async def random_channel_member(self, channel: discord.TextChannel):
         """Returns random member that has access to channel"""

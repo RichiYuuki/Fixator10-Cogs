@@ -7,15 +7,18 @@ from datetime import datetime
 import aiohttp
 import discord
 import tabulate
+
 from mcstatus import MinecraftServer
 from redbot.core import checks
 from redbot.core import commands
 from redbot.core.utils import chat_formatting as chat
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
-
 from .converters import MCNickname
+from redbot.core.i18n import Translator, cog_i18n
 
+_ = Translator("ExampleCog", __file__)
 
+@cog_i18n(_)
 class MinecraftData(commands.Cog):
     """Minecraft-Related data"""
 
@@ -37,7 +40,7 @@ class MinecraftData(commands.Cog):
         """Get minecraft skin by nickname"""
         uuid = nickname.uuid
         if uuid is None:
-            await ctx.send(chat.error("This player not found"))
+            await ctx.send(_(chat.error("This player not found")))
             return
         files = []
         async with ctx.channel.typing():
@@ -76,7 +79,7 @@ class MinecraftData(commands.Cog):
         em.set_footer(
             text="Provided by Crafatar", icon_url="https://crafatar.com/logo.png"
         )
-        await ctx.send(embed=em, files=files)
+        await ctx.send(_(embed=em, files=files))
 
     @minecraft.group(autohelp=True)
     async def cape(self, ctx):
@@ -95,37 +98,37 @@ class MinecraftData(commands.Cog):
             url="http://s.optifine.net/capes/{}.png".format(nickname.name),
         )
         em.set_image(url="http://s.optifine.net/capes/{}.png".format(nickname.name))
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @cape.command()
     async def labymod(self, ctx, nickname: MCNickname):
         """Get LabyMod cape by nickname"""
         uuid = nickname.dashed_uuid
         if uuid is None:
-            await ctx.send(chat.error("This player not found"))
+            await ctx.send(_(chat.error("This player not found")))
             return
         try:
             async with self.session.get(
                 "http://capes.labymod.net/capes/" + uuid
             ) as data:
                 if data.status == 404:
-                    await ctx.send(
+                    await ctx.send(_(
                         chat.error("404. Player not found on LabyMod's servers.")
-                    )
+                    ))
                     return
                 cape = await data.read()
         except Exception as e:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Data is not found. (Or LabyMod capes server is down)\n{}".format(
                         chat.inline(str(e))
                     )
                 )
-            )
+            ))
             return
         cape = io.BytesIO(cape)
         file = discord.File(cape, filename="{}.png".format(nickname))
-        await ctx.send(file=file)
+        await ctx.send(_(file=file))
         cape.close()
 
     @cape.command(aliases=["minecraftcapes", "couk"])
@@ -134,7 +137,7 @@ class MinecraftData(commands.Cog):
         """Get MinecraftCapes.co.uk cape by nickname"""
         uuid = nickname.uuid
         if uuid is None:
-            await ctx.send(chat.error("This player not found"))
+            await ctx.send(_(chat.error("This player not found")))
             return
         em = discord.Embed(
             timestamp=ctx.message.created_at, color=await ctx.embed_color()
@@ -146,7 +149,7 @@ class MinecraftData(commands.Cog):
         em.set_image(
             url="https://www.minecraftcapes.co.uk/getCape.php?uuid={}".format(uuid)
         )
-        await ctx.send(embed=em)
+        await ctx.send(_(embed=em))
 
     @cape.group(name="5zig", aliases=["fivezig"], invoke_without_command=True)
     async def fivezig(self, ctx, nickname: MCNickname):
@@ -158,7 +161,7 @@ class MinecraftData(commands.Cog):
         """Get 5zig cape by nickname"""
         uuid = nickname.uuid
         if uuid is None:
-            await ctx.send(chat.error("This player not found"))
+            await ctx.send(_(chat.error("This player not found")))
             return
         try:
             async with self.session.get(
@@ -167,17 +170,17 @@ class MinecraftData(commands.Cog):
                 response_data = await data.json(content_type=None)
             cape = response_data["cape"]
         except Exception as e:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Data is not found. (Or 5zig texture server is down)\n{}".format(
                         chat.inline(str(e))
                     )
                 )
-            )
+            ))
             return
         cape = io.BytesIO(base64.decodebytes(cape.encode()))
         file = discord.File(cape, filename="{}.png".format(nickname))
-        await ctx.send(file=file)
+        await ctx.send(_(file=file))
         cape.close()
 
     @fivezig.command(name="animated")
@@ -185,7 +188,7 @@ class MinecraftData(commands.Cog):
         """Get 5zig animated cape by nickname"""
         uuid = nickname.uuid
         if uuid is None:
-            await ctx.send(chat.error("This player not found"))
+            await ctx.send(_(chat.error("This player not found")))
             return
         try:
             async with self.session.get(
@@ -193,23 +196,23 @@ class MinecraftData(commands.Cog):
             ) as data:
                 response_data = await data.json(content_type=None)
             if "animatedCape" not in response_data:
-                await ctx.send(
+                await ctx.send(_(
                     chat.error("{} doesn't have animated cape").format(nickname.name)
-                )
+                ))
                 return
             cape = response_data["animatedCape"]
         except Exception as e:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Data is not found. (Or 5zig texture server is down)\n{}".format(
                         chat.inline(str(e))
                     )
                 )
-            )
+            ))
             return
         cape = io.BytesIO(base64.decodebytes(cape.encode()))
         file = discord.File(cape, filename="{}.png".format(nickname))
-        await ctx.send(file=file)
+        await ctx.send(_(file=file))
         cape.close()
 
     @minecraft.command()
@@ -222,13 +225,13 @@ class MinecraftData(commands.Cog):
                 None, MinecraftServer.lookup, server_ip
             )
         except Exception as e:
-            await ctx.send(chat.error(f"Unable to resolve IP: {e}"))
+            await ctx.send(_(chat.error(f"Unable to resolve IP: {e}")))
             return
         async with ctx.channel.typing():
             try:
                 status = await self.bot.loop.run_in_executor(None, server.status)
             except OSError as e:
-                await ctx.send(chat.error(f"Unable to get server's status: {e}"))
+                await ctx.send(_(chat.error(f"Unable to get server's status: {e}")))
                 return
             try:
                 query = await self.bot.loop.run_in_executor(None, server.query)
@@ -281,7 +284,7 @@ class MinecraftData(commands.Cog):
                 value=f"{query.software.brand}\n" f"Version: {query.software.version}\n"
                 # f"Plugins: {query.software.plugins}"
             )
-        await ctx.send(file=icon, embed=embed)
+        await ctx.send(_(file=icon, embed=embed))
 
     @minecraft.command()
     @checks.bot_has_permissions(embed_links=True)
@@ -303,22 +306,22 @@ class MinecraftData(commands.Cog):
                         .replace("yellow", "💛 **SOME ISSUES**")
                         .replace("green", "💚 **OK**"),
                     )
-            await ctx.send(embed=em)
+            await ctx.send(_(embed=em))
         except Exception as e:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Unable to check. An error has been occurred: {}".format(
                         chat.inline(str(e))
                     )
                 )
-            )
+            ))
 
     @minecraft.command(aliases=["nicknames", "nickhistory"])
     async def nicks(self, ctx, current_nick: MCNickname):
         """Check history of user's nicks"""
         uuid = current_nick.uuid
         if uuid is None:
-            await ctx.send(chat.error("This player not found"))
+            await ctx.send(_(chat.error("This player not found")))
             return
         try:
             async with self.session.get(
@@ -340,12 +343,12 @@ class MinecraftData(commands.Cog):
             pages = [chat.box(page) for page in list(chat.pagify(table))]
             await menu(ctx, pages, DEFAULT_CONTROLS)
         except Exception as e:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Unable to check name history.\nAn error has been occurred: "
                     + chat.inline(str(e))
                 )
-            )
+            ))
 
     async def gen_dict_extract(self, key, var):
         if hasattr(var, "items"):

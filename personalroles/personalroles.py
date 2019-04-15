@@ -6,12 +6,14 @@ from redbot.core.utils import chat_formatting as chat
 from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 from redbot.core.utils.mod import get_audit_reason
 from tabulate import tabulate
+from redbot.core.i18n import Translator, cog_i18n
 
+_ = Translator("ExampleCog", __file__)
 
 def has_assigned_role(ctx):
     return ctx.cog.config.member(ctx.author).role()
 
-
+@cog_i18n(_)
 class PersonalRoles(commands.Cog):
     """Assign and edit personal roles"""
 
@@ -36,22 +38,22 @@ class PersonalRoles(commands.Cog):
     async def assign(self, ctx, user: discord.Member, *, role: discord.Role):
         """Assign personal role to someone"""
         await self.config.member(user).role.set(role.id)
-        await ctx.send(
+        await ctx.send(_(
             "Ok. I just assigned {} ({}) to role {} ({}).".format(
                 user.name, user.id, role.name, role.id
             )
-        )
+        ))
 
     @myrole.command()
     @checks.admin_or_permissions(manage_roles=True)
     async def unassign(self, ctx, *, user: discord.Member):
         """Unassign personal role from someone"""
         await self.config.member(user).role.clear()
-        await ctx.send(
+        await ctx.send(_(
             "Ok. I just unassigned {} ({}) from his personal role.".format(
                 user.name, user.id
             )
-        )
+        ))
 
     @myrole.command(name="list")
     @checks.admin_or_permissions(manage_roles=True)
@@ -91,14 +93,14 @@ class PersonalRoles(commands.Cog):
         rolename = rolename.casefold()
         async with self.config.guild(ctx.guild).blacklist() as blacklist:
             if rolename in blacklist:
-                await ctx.send(
+                await ctx.send(_(
                     chat.error("`{}` is already in blacklist".format(rolename))
-                )
+                ))
             else:
                 blacklist.append(rolename)
-                await ctx.send(
+                await ctx.send(_(
                     chat.info("Added `{}` to blacklisted roles list".format(rolename))
-                )
+                ))
 
     @blacklist.command()
     @checks.admin_or_permissions(manage_roles=True)
@@ -107,14 +109,14 @@ class PersonalRoles(commands.Cog):
         rolename = rolename.casefold()
         async with self.config.guild(ctx.guild).blacklist() as blacklist:
             if rolename not in blacklist:
-                await ctx.send(chat.error("`{}` is not blacklisted".format(rolename)))
+                await ctx.send(_(chat.error("`{}` is not blacklisted".format(rolename))))
             else:
                 blacklist.remove(rolename)
-                await ctx.send(
+                await ctx.send(_(
                     chat.info(
                         "Removed `{}` from blacklisted roles list".format(rolename)
                     )
-                )
+                ))
 
     @blacklist.command(name="list")
     @checks.admin_or_permissions(manage_roles=True)
@@ -125,7 +127,7 @@ class PersonalRoles(commands.Cog):
         if pages:
             await menu(ctx, pages, DEFAULT_CONTROLS)
         else:
-            await ctx.send(chat.info("There is no blacklisted roles"))
+            await ctx.send(_(chat.info("There is no blacklisted roles")))
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @myrole.command(aliases=["color"])
@@ -140,18 +142,18 @@ class PersonalRoles(commands.Cog):
                 colour=colour, reason=get_audit_reason(ctx.author, "Personal Role")
             )
         except discord.Forbidden:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Unable to edit role.\nRole must be lower than my top role and i must have "
                     'permission "Manage Roles"'
-                )
+                ))
             )
         else:
-            await ctx.send(
+            await ctx.send(_(
                 "Changed color of {}'s personal role to {}".format(
                     ctx.message.author.name, colour
                 )
-            )
+            ))
 
     @commands.cooldown(1, 30, commands.BucketType.user)
     @myrole.command()
@@ -164,25 +166,25 @@ class PersonalRoles(commands.Cog):
         role = ctx.guild.get_role(role)
         name = name[:100]
         if name.casefold() in await self.config.guild(ctx.guild).blacklist():
-            await ctx.send(chat.error("NONONO!!! This rolename is blacklisted."))
+            await ctx.send(_(chat.error("NONONO!!! This rolename is blacklisted.")))
             return
         try:
             await role.edit(
                 name=name, reason=get_audit_reason(ctx.author, "Personal Role")
             )
         except discord.Forbidden:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "Unable to edit role.\nRole must be lower than my top role and i must have "
                     'permission "Manage Roles"'
                 )
-            )
+            ))
         else:
-            await ctx.send(
+            await ctx.send(_(
                 "Changed name of {}'s personal role to {}".format(
                     ctx.message.author.name, name
                 )
-            )
+            ))
 
     async def smart_truncate(self, content, length=32, suffix="…"):
         """https://stackoverflow.com/questions/250357/truncate-a-string-without-ending-in-the-middle-of-a-word"""

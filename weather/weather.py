@@ -12,6 +12,9 @@ from requests.exceptions import (
     ConnectionError as RequestsConnectionError,
     Timeout,
 )
+from redbot.core.i18n import Translator, cog_i18n
+
+_ = Translator("ExampleCog", __file__)
 
 WEATHER_STATES = {
     "clear-day": "\N{Black Sun with Rays}",
@@ -26,7 +29,7 @@ WEATHER_STATES = {
     "partly-cloudy-night": "\N{Night with Stars}",
 }
 
-
+@cog_i18n(_)
 class Weather(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -52,7 +55,7 @@ class Weather(commands.Cog):
         )
         g = await self.bot.loop.run_in_executor(None, geocoder.komoot, place)
         if not g.latlng:
-            await ctx.send(chat.error(f"Cannot find a place {chat.inline(place)}"))
+            await ctx.send(_(chat.error(f"Cannot find a place {chat.inline(place)}")))
             return
         try:
             forecast = await self.bot.loop.run_in_executor(
@@ -66,15 +69,15 @@ class Weather(commands.Cog):
                 ),
             )
         except HTTPError:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "This command requires API key. "
                     f"Use {ctx.prefix}forecastapi to get more information"
                 )
-            )
+            ))
             return
         except (RequestsConnectionError, Timeout):
-            await ctx.send(chat.error("Unable to get data from forecast.io"))
+            await ctx.send(_(chat.error("Unable to get data from forecast.io")))
             return
         by_hour = forecast.currently()
         place = [place for place in [g.city, g.state, g.country] if place]
@@ -95,9 +98,9 @@ class Weather(commands.Cog):
             description=content, color=await ctx.embed_color(), timestamp=by_hour.time
         )
         if ctx.channel.permissions_for(ctx.guild.me).embed_links:
-            await ctx.send(embed=em)
+            await ctx.send(_(embed=em))
         else:
-            await ctx.send(content)
+            await ctx.send(_(content))
 
     @commands.command()
     @commands.guild_only()
@@ -108,7 +111,7 @@ class Weather(commands.Cog):
         )
         g = await self.bot.loop.run_in_executor(None, geocoder.komoot, place)
         if not g.latlng:
-            await ctx.send(f"Cannot find a place {chat.inline(place)}")
+            await ctx.send(_(f"Cannot find a place {chat.inline(place)}"))
             return
         try:
             forecast = await self.bot.loop.run_in_executor(
@@ -122,15 +125,15 @@ class Weather(commands.Cog):
                 ),
             )
         except HTTPError:
-            await ctx.send(
+            await ctx.send(_(
                 chat.error(
                     "This command requires API key. "
                     f"Use {ctx.prefix}forecastapi to get more information"
                 )
-            )
+            ))
             return
         except (RequestsConnectionError, Timeout):
-            await ctx.send(chat.error("Unable to get data from forecast.io"))
+            await ctx.send(_(chat.error("Unable to get data from forecast.io")))
             return
         by_hour = forecast.daily()
         place = [place for place in [g.city, g.state, g.country] if place]
@@ -150,6 +153,6 @@ class Weather(commands.Cog):
             timestamp=datetime.datetime.now(),
         )
         if ctx.channel.permissions_for(ctx.guild.me).embed_links:
-            await ctx.send(embed=em)
+            await ctx.send(_(embed=em))
         else:
-            await ctx.send(content)
+            await ctx.send(_(content))
